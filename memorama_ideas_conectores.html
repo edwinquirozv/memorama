@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memorama · Ideas y conectores</title>
+<style>
+  :root{
+    --ink:#293347; --muted:#6d7588; --paper:#fffdfb;
+    --lav:#e9e3ff; --blue:#dceeff; --pink:#ffe2ec;
+    --mint:#dcf5e7; --butter:#fff0c9; --line:#e7e7ef;
+    --shadow:0 14px 35px rgba(61,65,96,.09);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; color:var(--ink);
+    font-family:ui-rounded,"Trebuchet MS",system-ui,-apple-system,sans-serif;
+    background:
+      radial-gradient(circle at 5% 5%,#f5eaff 0,transparent 25rem),
+      radial-gradient(circle at 95% 12%,#e2f4ff 0,transparent 25rem),
+      #fbfaf8;
+  }
+  button{font:inherit}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 48px}
+  header{text-align:center;padding:22px 12px 18px}
+  .eyebrow{display:inline-flex;gap:8px;align-items:center;padding:7px 12px;border:1px solid #e9e3f7;background:#ffffffb8;border-radius:999px;color:#6c6392;font-size:.78rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+  h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;letter-spacing:-.045em;margin:18px auto 12px;max-width:800px}
+  h1 span{color:#8174c6}
+  .intro{max-width:650px;margin:0 auto;color:var(--muted);line-height:1.65}
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 18px;padding:14px;background:#ffffffb8;border:1px solid #eeedf3;border-radius:20px;box-shadow:var(--shadow)}
+  .stats{display:flex;flex-wrap:wrap;gap:10px}
+  .stat{min-width:88px;padding:9px 13px;border-radius:13px;background:#f5f2ff}
+  .stat:nth-child(2){background:#eaf6ff}.stat:nth-child(3){background:#fff0f5}
+  .stat small{display:block;font-size:.72rem;color:var(--muted);font-weight:700}
+  .stat strong{font-size:1.2rem}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer;transition:transform .15s,filter .15s}
+  .btn:hover{transform:translateY(-2px);filter:saturate(1.1)}
+  .btn-primary{background:#8275c8;color:white;box-shadow:0 6px 14px #8275c833}
+  .btn-soft{background:#f0edf8;color:#5d567c}
+  .message{display:flex;align-items:center;gap:10px;min-height:54px;padding:13px 16px;margin-bottom:18px;background:#fff;border:1px solid var(--line);border-radius:16px;color:#596176}
+  .message .dot{width:10px;height:10px;flex:none;border-radius:50%;background:#9b8de0;box-shadow:0 0 0 5px #eee9ff}
+  .board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:13px}
+  .card{position:relative;min-height:150px;border:0;background:transparent;perspective:900px;cursor:pointer;padding:0;color:var(--ink);text-align:center}
+  .card-inner{position:absolute;inset:0;transition:transform .5s cubic-bezier(.2,.75,.2,1);transform-style:preserve-3d}
+  .card.flipped .card-inner,.card.matched .card-inner{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;padding:15px;border-radius:19px;border:1px solid #e8e5ef;backface-visibility:hidden;box-shadow:0 7px 18px rgba(53,55,90,.055)}
+  .back{background:linear-gradient(145deg,#f0eaff,#e6f3ff);overflow:hidden}
+  .back:before{content:"";position:absolute;width:105px;height:105px;border:1px solid #ffffffb0;border-radius:50%;right:-30px;top:-30px}
+  .back:after{content:"";position:absolute;width:70px;height:70px;border:1px solid #ffffffb0;border-radius:50%;left:-20px;bottom:-25px}
+  .symbol{font-size:2rem;line-height:1;z-index:1}
+  .back small{z-index:1;color:#8178a6;font-weight:800;letter-spacing:.12em;font-size:.68rem}
+  .front{transform:rotateY(180deg);background:white}
+  .front .kind{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:#8b7dc5}
+  .front .content{font-size:.94rem;line-height:1.35;font-weight:800;overflow-wrap:anywhere}
+  .card[data-tone="blue"] .front{background:#eef7ff;border-color:#d5eaff}
+  .card[data-tone="pink"] .front{background:#fff1f5;border-color:#ffdae7}
+  .card[data-tone="mint"] .front{background:#effaf2;border-color:#d6efdf}
+  .card[data-tone="butter"] .front{background:#fff9e8;border-color:#f7e7b6}
+  .card[data-tone="lav"] .front{background:#f5f1ff;border-color:#e4dcff}
+  .card.matched .face{border:2px solid #8fcaa7;box-shadow:0 0 0 3px #dcf5e7}
+  .card:focus-visible{outline:3px solid #8375ca;outline-offset:4px;border-radius:20px}
+  .card:disabled{cursor:default}
+  .bottom{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-top:22px;color:var(--muted);font-size:.87rem;line-height:1.55}
+  .tip{display:flex;gap:10px;max-width:700px}
+  .tip-icon{font-size:1.35rem}
+  .pill{white-space:nowrap;background:#f0edf8;color:#6c6294;padding:7px 11px;border-radius:999px;font-weight:800;font-size:.75rem}
+  .overlay{position:fixed;inset:0;display:none;place-items:center;background:#25243b66;backdrop-filter:blur(5px);padding:20px;z-index:5}
+  .overlay.show{display:grid}
+  .modal{width:min(440px,100%);background:var(--paper);border:1px solid #fff;border-radius:26px;padding:30px;text-align:center;box-shadow:0 25px 80px #25243b33}
+  .modal .emoji{font-size:3rem}
+  .modal h2{font-size:1.8rem;margin:10px 0}
+  .modal p{color:var(--muted);line-height:1.6}
+  @media(max-width:850px){.board{grid-template-columns:repeat(4,minmax(0,1fr))}.card{min-height:145px}}
+  @media(max-width:540px){.wrap{padding:16px 12px 30px}.board{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.card{min-height:132px}.face{padding:10px;border-radius:15px}.front .content{font-size:.8rem}.toolbar{align-items:flex-start}.bottom{flex-direction:column}.stat{min-width:75px}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">✦ Aprende jugando · Español</div>
+    <h1>Memorama de <span>ideas y conectores</span></h1>
+    <p class="intro">Encuentra las parejas correctas relacionando cada concepto con su definición o ejemplo. ¡Pon a prueba tu memoria y tus conocimientos!</p>
+  </header>
+
+  <section class="toolbar" aria-label="Marcador del juego">
+    <div class="stats">
+      <div class="stat"><small>Parejas</small><strong id="pairs">0 / 9</strong></div>
+      <div class="stat"><small>Intentos</small><strong id="attempts">0</strong></div>
+      <div class="stat"><small>Tiempo</small><strong id="time">00:00</strong></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-soft" id="restart" type="button">↻ Reiniciar</button>
+      <button class="btn btn-primary" id="shuffle" type="button">Mezclar cartas ✨</button>
+    </div>
+  </section>
+
+  <div class="message" role="status" aria-live="polite"><span class="dot"></span><span id="message">Voltea dos cartas para comenzar. Si se relacionan, ¡la pareja es tuya!</span></div>
+  <main id="board" class="board" aria-label="Tablero de memorama"></main>
+
+  <div class="bottom">
+    <div class="tip"><span class="tip-icon">💡</span><div><strong>Mini reto:</strong> cada vez que encuentres una pareja, explica con tus palabras por qué se relacionan. ¡Puedes ganar puntos extra en clase!</div></div>
+    <span class="pill">9 parejas · 18 cartas</span>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="modal">
+    <div class="emoji">🎉</div>
+    <h2 id="winTitle">¡Memoria desbloqueada!</h2>
+    <p id="winText">Encontraste todas las parejas.</p>
+    <button class="btn btn-primary" id="playAgain" type="button">Jugar otra vez</button>
+  </div>
+</div>
+
+<script>
+const pairsData = [
+  {id:1, tone:"blue", a:{kind:"Concepto",text:"Idea principal"}, b:{kind:"Definición",text:"Expresa la información más importante del texto."}},
+  {id:2, tone:"mint", a:{kind:"Concepto",text:"Ideas secundarias"}, b:{kind:"Definición",text:"Complementan, explican y detallan la idea principal."}},
+  {id:3, tone:"pink", a:{kind:"Concepto",text:"Conectores textuales"}, b:{kind:"Definición",text:"Unen oraciones y párrafos mediante relaciones lógicas."}},
+  {id:4, tone:"butter", a:{kind:"Tipo de conector",text:"Adición"}, b:{kind:"Ejemplo",text:"Agrega información. Ejemplo: además."}},
+  {id:5, tone:"lav", a:{kind:"Tipo de conector",text:"Contraste"}, b:{kind:"Ejemplo",text:"Expresa oposición. Ejemplo: sin embargo."}},
+  {id:6, tone:"blue", a:{kind:"Tipo de conector",text:"Secuencia"}, b:{kind:"Ejemplo",text:"Indica orden: primero, luego y finalmente."}},
+  {id:7, tone:"mint", a:{kind:"Ejemplo",text:"Idea principal"}, b:{kind:"Oración",text:"La lectura es importante para el aprendizaje."}},
+  {id:8, tone:"pink", a:{kind:"Ejemplo",text:"Idea secundaria"}, b:{kind:"Oración",text:"Leer ayuda a ampliar el vocabulario."}},
+  {id:9, tone:"lav", a:{kind:"Ejemplo",text:"Conector textual"}, b:{kind:"Oración",text:"Estudié mucho; por lo tanto, comprendí el tema."}}
+];
+const board = document.getElementById("board");
+const pairsEl = document.getElementById("pairs");
+const attemptsEl = document.getElementById("attempts");
+const timeEl = document.getElementById("time");
+const messageEl = document.getElementById("message");
+const overlay = document.getElementById("overlay");
+let first = null, second = null, lock = false, found = 0, attempts = 0, seconds = 0, ticker = null, started = false;
+
+function shuffle(array){ for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];} return array; }
+function allCards(){
+  return pairsData.flatMap(p=>[
+    {pair:p.id,tone:p.tone,...p.a},
+    {pair:p.id,tone:p.tone,...p.b}
+  ]);
+}
+function makeCard(card,index){
+  const button=document.createElement("button");
+  button.type="button"; button.className="card"; button.dataset.pair=card.pair; button.dataset.tone=card.tone;
+  button.setAttribute("aria-label",`Carta ${index+1}, boca abajo`);
+  button.innerHTML=`<span class="card-inner"><span class="face back"><span class="symbol">✦</span><small>MEMORAMA</small></span><span class="face front"><span class="kind">${card.kind}</span><span class="content">${card.text}</span></span></span>`;
+  button.addEventListener("click",()=>flip(button,card));
+  return button;
+}
+function render(){
+  board.innerHTML="";
+  shuffle(allCards()).forEach((card,i)=>board.appendChild(makeCard(card,i)));
+}
+function startClock(){
+  if(started)return;
+  started=true;
+  ticker=setInterval(()=>{seconds++;timeEl.textContent=formatTime(seconds);},1000);
+}
+function formatTime(n){return `${String(Math.floor(n/60)).padStart(2,"0")}:${String(n%60).padStart(2,"0")}`;}
+function flip(button,card){
+  if(lock || button.classList.contains("flipped") || button.classList.contains("matched"))return;
+  startClock();
+  button.classList.add("flipped"); button.setAttribute("aria-label",`${card.kind}: ${card.text}`);
+  if(!first){first={button,card};messageEl.textContent="¡Bien! Ahora encuentra la carta que completa la pareja.";return;}
+  second={button,card}; attempts++; attemptsEl.textContent=attempts;
+  if(first.card.pair===second.card.pair){
+    first.button.classList.add("matched"); second.button.classList.add("matched");
+    first.button.disabled=true; second.button.disabled=true;
+    found++; pairsEl.textContent=`${found} / ${pairsData.length}`;
+    messageEl.textContent="¡Pareja encontrada! ¿Puedes explicar por qué se relacionan?";
+    first=null;second=null;
+    if(found===pairsData.length){
+      clearInterval(ticker);
+      document.getElementById("winText").textContent=`Completaste el memorama en ${formatTime(seconds)} con ${attempts} intentos. ¡Excelente trabajo!`;
+      setTimeout(()=>overlay.classList.add("show"),550);
+      messageEl.textContent="¡Lo lograste! Encontraste todas las parejas.";
+    }
+  }else{
+    lock=true; messageEl.textContent="Casi… esas cartas no forman pareja. ¡Inténtalo de nuevo!";
+    setTimeout(()=>{
+      first.button.classList.remove("flipped");second.button.classList.remove("flipped");
+      first.button.setAttribute("aria-label","Carta boca abajo");second.button.setAttribute("aria-label","Carta boca abajo");
+      first=null;second=null;lock=false;
+    },1050);
+  }
+}
+function reset(){
+  clearInterval(ticker);first=null;second=null;lock=false;found=0;attempts=0;seconds=0;started=false;
+  pairsEl.textContent=`0 / ${pairsData.length}`;attemptsEl.textContent="0";timeEl.textContent="00:00";
+  messageEl.textContent="Voltea dos cartas para comenzar. Si se relacionan, ¡la pareja es tuya!";
+  overlay.classList.remove("show");render();
+}
+document.getElementById("restart").addEventListener("click",reset);
+document.getElementById("shuffle").addEventListener("click",reset);
+document.getElementById("playAgain").addEventListener("click",reset);
+overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.classList.remove("show")});
+render();
+</script>
+</body>
+</html>
